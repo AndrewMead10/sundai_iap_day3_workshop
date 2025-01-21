@@ -22,6 +22,11 @@ class HistoryResponse(BaseModel):
     image_url: str
     created_at: datetime
 
+@app.get("/")
+def hello_world():
+    return {"message": "Hello World"}
+
+
 @app.get("/history", response_model=List[HistoryResponse])
 def get_history(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
     history = db.query(History)\
@@ -31,8 +36,8 @@ def get_history(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
         .all()
     return history
 
-@app.post("/generate")
-async def generate_image(
+@app.post("/save")
+async def save_image(
     prompt: str,
     image: UploadFile = File(...),
     db: Session = Depends(get_db)

@@ -8,4 +8,4 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt --break-system-package
 COPY . /app
 
-ENTRYPOINT [ "python3", "fastapi_example.py" ]
+ENTRYPOINT [ "python3", "main.py" ]

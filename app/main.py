@@ -15,7 +15,6 @@ app = FastAPI()
 # Google Cloud Storage setup
 storage_client = storage.Client()
 bucket_name = os.getenv("BUCKET_NAME")  # Get bucket name from environment variable
-bucket_name = "sundai-iap-bucket1"
 bucket = storage_client.bucket(bucket_name)
 
 class HistoryResponse(BaseModel):

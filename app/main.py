@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 from google.cloud import storage
@@ -11,6 +12,15 @@ import uvicorn
 from database import get_db, History
 
 app = FastAPI()
+
+# add cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Google Cloud Storage setup
 storage_client = storage.Client()

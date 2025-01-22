@@ -8,4 +8,8 @@ COPY ./app/requirements.txt /app/requirements.txt
 RUN pip3 install -r requirements.txt --break-system-package
 COPY ./app /app
 
+# Our Bucket Secret (Build will break without this, which is good as it is necessary for proper operation)
+COPY ./google_secrets.json /
+ENV GOOGLE_APPLICATION_CREDENTIALS=/google_secrets.json
+
 ENTRYPOINT [ "python3", "main.py" ]

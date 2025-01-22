@@ -8,6 +8,7 @@ from datetime import datetime
 from pydantic import BaseModel
 import os
 import uvicorn
+import requests
 
 from database import get_db, History
 
@@ -43,7 +44,7 @@ def get_history(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
 
 class SaveImageRequest(BaseModel):
     prompt: str
-    image: UploadFile
+    image_url: str
 
 @app.post("/save")
 async def save_image(
@@ -52,14 +53,21 @@ async def save_image(
 ):
     # Upload image to Google Cloud Storage
     try:
+        # Download image from URL
+        response = requests.get(request.image_url)
+        if response.status_code != 200:
+            raise HTTPException(status_code=400, detail="Failed to fetch image from URL")
+        
+        # Get content type and extension from response headers
+        content_type = response.headers.get('content-type', 'image/png')
+        extension = content_type.split('/')[-1]
+        
         # Generate unique filename
-        file_extension = request.image.filename.split(".")[-1]
-        blob_name = f"generations/{uuid.uuid4()}.{file_extension}"
+        blob_name = f"generations/{uuid.uuid4()}.{extension}"
         blob = bucket.blob(blob_name)
         
         # Upload the file
-        contents = await request.image.read()
-        blob.upload_from_string(contents, content_type=request.image.content_type)
+        blob.upload_from_string(response.content, content_type=content_type)
         
         # Make the blob publicly accessible
         blob.make_public()
